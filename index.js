@@ -1,6 +1,5 @@
-// Required: Import the crypto module
 const crypto = global.crypto || require("crypto");
-// Make crypto globally available
+
 global.crypto = crypto;
 
 const {
@@ -15,23 +14,18 @@ const pino = require("pino");
 const fs = require("fs");
 const path = require("path");
 const qrcode = require("qrcode-terminal");
+const readline = require("readline");
 
-// Create auth directory if it doesn't exist
 const AUTH_FOLDER = './auth_info';
 if (!fs.existsSync(AUTH_FOLDER)) {
   fs.mkdirSync(AUTH_FOLDER, { recursive: true });
   console.log('Created auth folder. Ready for QR code authentication.');
 }
 
-// Clear any existing session to force new QR code generation
-// Comment this out if you want to reuse existing session
-/*
-if (fs.existsSync(path.join(AUTH_FOLDER, 'creds.json'))) {
-  fs.unlinkSync(path.join(AUTH_FOLDER, 'creds.json'));
-  console.log('Removed existing session. Will generate new QR code.');
-}
-*/
-
+const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+  });
 // Start the WhatsApp bot
 async function startBot() {
   try {
@@ -88,6 +82,21 @@ async function startBot() {
         // Get connected user's number
         const userJid = sock.user.id.replace(/:.+@/, '@');
         console.log(`Connected as: ${userJid}`);
+      
+          
+          rl.question('📱 Enter the phone number (with country code, e.g., 919876543210): ', async (number) => {
+            const jid = `${number}@s.whatsapp.net`; // Format the number as a JID
+          
+            rl.question('💬 Enter the message to send: ', async (message) => {
+              try {
+                await sock.sendMessage(jid, { text: message });
+                console.log(`✅ Message sent to ${number}`);
+              } catch (error) {
+                console.error(`❌ Failed to send message:`, error);
+              }
+              rl.close();
+            });
+          });
       }
       
       // Handle disconnection

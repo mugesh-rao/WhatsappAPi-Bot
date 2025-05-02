@@ -1,2 +1,16 @@
-./node_modules
-node_modules
+# Node.js dependencies
+node_modules/
+package-lock.json
+
+# Baileys auth state
+auth_info/
+
+# WWebJS (if you're also using whatsapp-web.js)
+.wwebjs_auth/
+.wwebjs_cache/
+
+# Logs and temporary files
+*.log
+*.tmp
+
+# Environment files
